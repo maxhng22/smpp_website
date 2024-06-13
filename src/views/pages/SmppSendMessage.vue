@@ -13,7 +13,7 @@
           </IconField>
         </div>
       </template>
-      <template #empty> No customers found. </template>
+      <template #empty> No data found. </template>
       <template #loading> Loading customers data. Please wait. </template>
       <Column field="name" header="Name" style="min-width: 12rem">
         <template #body="{ data }">
@@ -53,34 +53,158 @@
       </Column>
 
     </DataTable>
+
+    <h1>Account</h1>
+    <div class="p-fluid formgrid grid">
+      <div class="field col-12 md:col-2">
+        <label for="to" class="p-sr-only">Host</label>
+        <InputText v-model="host" id="to" type="text" placeholder="Host" />
+      </div>
+     
+      <div class="field col-12 md:col-2">
+        <label for="to" class="p-sr-only">Port</label>
+        <InputText v-model="port" id="to" type="text" placeholder="Port" />
+      </div>
+
+      <div class="field col-12 md:col-2">
+        <label for="to" class="p-sr-only">System ID</label>
+        <InputText v-model="systemId" id="to" type="text" placeholder="System ID" />
+      </div>
+
+      <div class="field col-12 md:col-2">
+        <label for="to" class="p-sr-only">Password</label>
+        <InputText v-model="password" id="to" type="text" placeholder="Password" />
+      </div>
+
+      <div class="field col-12 md:col-2">
+        <label for="to" class="p-sr-only">System Type</label>
+        <InputText v-model="systemType" id="to" type="text" placeholder="System Type" />
+      </div>
+
+      <div class="field col-12 md:col-2">
+        <label for="to" class="p-sr-only">Version</label>
+        <InputText v-model="version" id="to" type="text" placeholder="Version" />
+      </div>
+
+
+
+      <div class="field col-5">
+        <ButtonGroup>
+          <Button label="Connect"  />
+          <Button label="Tx-Only" severity="secondary" />
+          <Button label="Rx-Only"  />
+          <Button label="Disconnect" severity="secondary" />
+      </ButtonGroup>
+    </div>
+    </div>
+    
     <h1>Send Message</h1>
-    <div class="formgroup-inline">
-      <div class="field">
-        <label for="to" class="p-sr-only">To</label>
-        <InputText v-model="to" id="to" type="text" placeholder="To" />
+    <div class="p-fluid formgrid grid">
+      <div class="field col-12 md:col-4">
+        <label for="to" class="p-sr-only">Source address</label>
+        <InputText v-model="to" id="to" type="text" placeholder="Source address" />
       </div>
-      <div class="field">
+
+      <div class="field col-12 md:col-4">
+        <label for="to" class="p-sr-only">Destination address</label>
+        <InputText v-model="to" id="to" type="text" placeholder="Destination address" />
+      </div>
+
+      <div class="field col-12 md:col-4">
+        <label for="to" class="p-sr-only">Registered delivery</label>
+        <Dropdown id="state" v-model="dropdownItem" :options="dropdownItems" optionLabel="name" placeholder="Select One"></Dropdown>
+      </div>
+
+      <div class="field col-12">
         <label for="message" class="p-sr-only">Message</label>
-        <InputText v-model="message" id="message" type="text" placeholder="Message" />
+        <Textarea v-model="message" id="message" type="text" placeholder="Message" rows="4" />
       </div>
+      <div class="field col-2">
       <Button label="Send" @click="sendMessage"></Button>
     </div>
+    </div>
+
+    <h1>Logs</h1>
+    <DataTable :value="customer1" :paginator="true" :rows="10" dataKey="id" :rowHover="true" v-model:filters="filters1"
+      filterDisplay="menu" :loading="loading1" :filters="filters1"
+      :globalFilterFields="[]" showGridlines>
+      <template #header>
+        <div class="flex justify-content-between flex-column sm:flex-row">
+          <Button type="button" icon="pi pi-filter-slash" label="Clear" outlined @click="clearFilter1()" />
+          <IconField iconPosition="left">
+            <InputIcon class="pi pi-search" />
+            <InputText v-model="filters1['global'].value" placeholder="Keyword Search" style="width: 100%" />
+          </IconField>
+        </div>
+      </template>
+      <template #empty> No data found. </template>
+      <template #loading> Loading customers data. Please wait. </template>
+      <Column field="name" header="Source" style="min-width: 12rem">
+        <template #body="{ data }">
+          {{ data.name }}
+        </template>
+        <template #filter="{ filterModel }">
+          <InputText type="text" v-model="filterModel.value" class="p-column-filter" placeholder="Search by name" />
+        </template>
+      </Column>
+
+
+      <Column header="Destination" filterField="date" dataType="date" style="min-width: 10rem">
+        <template #body="{ data }">
+          {{ formatDate(data.date) }}
+        </template>
+        <template #filter="{ filterModel }">
+          <Calendar v-model="filterModel.value" dateFormat="mm/dd/yy" placeholder="mm/dd/yyyy" />
+        </template>
+      </Column>
+
+      <Column field="status" header="Message" :filterMenuStyle="{ width: '14rem' }" style="min-width: 12rem">
+        <template #body="{ data }">
+          <Tag :severity="getSeverity(data.status)">{{ data.status.toUpperCase() }}</Tag>
+        </template>
+        <template #filter="{ filterModel }">
+          <Dropdown v-model="filterModel.value" :options="statuses" placeholder="Any" class="p-column-filter"
+            :showClear="true">
+            <template #value="slotProps">
+              <Tag :severity="getSeverity(slotProps.value)" v-if="slotProps.value">{{ slotProps.value }} </Tag>
+              <span v-else>{{ slotProps.placeholder }}</span>
+            </template>
+            <template #option="slotProps">
+              <Tag :severity="getSeverity(slotProps.option)">{{ slotProps.option.toUpperCase() }}</Tag>
+            </template>
+          </Dropdown>
+        </template>
+      </Column>
+
+    </DataTable>
   </div>
 </template>
 
 <script setup>
 import { ref, onBeforeMount, reactive } from 'vue';
+
 import axios from 'axios';
 import { useToast } from 'primevue/usetoast';
+
 
 import { FilterMatchMode, FilterOperator } from 'primevue/api';
 import { CustomerService } from '@/service/CustomerService';
 import { ProductService } from '@/service/ProductService';
 
-
+// host,port,systemId,password,systemType,version
 const toast = useToast(); // Move useToast inside a function
 const to = ref('');
-const message = ref('');
+const host = ref('');
+const port = ref('');
+const systemId = ref('');
+const systemType = ref('');
+const password = ref('');
+const version = ref('');
+const dropdownItem = ref('');
+// const message = ref('');
+// const to = ref('');
+// const message = ref('');
+
 const customer1 = ref(null);
 const customer2 = ref(null);
 const customer3 = ref(null);
@@ -106,6 +230,16 @@ const representatives = reactive([
 
 const customerService = new CustomerService();
 const productService = new ProductService();
+const dropdownItems = ref([
+    { name: 'MC Delivery Receipt', code: 1 },
+    { name: 'No MC Delivery Receipt', code: 0 },
+    { name: 'MC Delivery Receipt on fail', code: 2 },
+    { name: 'MC Delivery Receipt on success', code: 3 },
+    { name: 'Intermediate notification', code: 16 },
+    { name: 'Intermediate + MC Delivery Receipt', code: 17 },
+    { name: 'Intermediate + MC Delivery Receipt on fail', code: 18 },
+    { name: 'Intermediate + MC Delivery Receipt on success', code: 19 }
+]);
 
 const getBadgeSeverity = (inventoryStatus) => {
     switch (inventoryStatus.toLowerCase()) {
@@ -214,6 +348,65 @@ const sendMessage = async () => {
     showError(`Failed to send message:${error}`);
     console.error('Failed to send message:', error);
   }
+};
+
+
+
+
+const connectSmpp = async () => {
+
+try {
+  await axios.post('http://localhost:3000/api/send-message', {
+    to: to.value,
+    message: message.value
+  });
+  showSuccess();
+} catch (error) {
+  showError(`Failed to send message:${error}`);
+  console.error('Failed to send message:', error);
+}
+};
+
+const disconnectSmpp = async () => {
+
+try {
+  await axios.post('http://localhost:3000/api/send-message', {
+    to: to.value,
+    message: message.value
+  });
+  showSuccess();
+} catch (error) {
+  showError(`Failed to send message:${error}`);
+  console.error('Failed to send message:', error);
+}
+};
+
+const txonlySmpp = async () => {
+
+try {
+  await axios.post('http://localhost:3000/api/send-message', {
+    to: to.value,
+    message: message.value
+  });
+  showSuccess();
+} catch (error) {
+  showError(`Failed to send message:${error}`);
+  console.error('Failed to send message:', error);
+}
+};
+
+const rxonlySmpp = async () => {
+
+try {
+  await axios.post('http://localhost:3000/api/send-message', {
+    to: to.value,
+    message: message.value
+  });
+  showSuccess();
+} catch (error) {
+  showError(`Failed to send message:${error}`);
+  console.error('Failed to send message:', error);
+}
 };
 
 const showSuccess = () => {
