@@ -90,10 +90,10 @@
 
       <div class="field col-5">
         <ButtonGroup>
-          <Button label="Connect"  />
-          <Button label="Tx-Only" severity="secondary" />
-          <Button label="Rx-Only"  />
-          <Button label="Disconnect" severity="secondary" />
+          <Button label="Connect"  @click="connectSmpp"/>
+          <Button label="Tx-Only" severity="secondary" @click="txonlySmpp" />
+          <Button label="Rx-Only" @click="rxonlySmpp" />
+          <Button label="Disconnect" severity="secondary" @click="disconnectSmpp" />
       </ButtonGroup>
     </div>
     </div>
@@ -102,7 +102,7 @@
     <div class="p-fluid formgrid grid">
       <div class="field col-12 md:col-4">
         <label for="to" class="p-sr-only">Source address</label>
-        <InputText v-model="to" id="to" type="text" placeholder="Source address" />
+        <InputText v-model="from" id="to" type="text" placeholder="Source address" />
       </div>
 
       <div class="field col-12 md:col-4">
@@ -182,17 +182,16 @@
 
 <script setup>
 import { ref, onBeforeMount, reactive } from 'vue';
-
+import { sendMessageSMPP,txOnlySMPP,rxOnlySMPP,connectSMPP,disConnectSMPP } from '@/service/smpp/smpp';
 import axios from 'axios';
 import { useToast } from 'primevue/usetoast';
-
-
 import { FilterMatchMode, FilterOperator } from 'primevue/api';
 import { CustomerService } from '@/service/CustomerService';
 import { ProductService } from '@/service/ProductService';
 
 // host,port,systemId,password,systemType,version
 const toast = useToast(); // Move useToast inside a function
+const from = ref('');
 const to = ref('');
 const host = ref('');
 const port = ref('');
@@ -337,76 +336,59 @@ const calculateCustomerTotal = (name) => {
 };
 
 const sendMessage = async () => {
-
   try {
-    await axios.post('http://localhost:3000/api/send-message', {
-      to: to.value,
-      message: message.value
-    });
-    showSuccess();
-  } catch (error) {
-    showError(`Failed to send message:${error}`);
-    console.error('Failed to send message:', error);
-  }
+        await sendMessageSMPP(from.value, to.value,message.value,dropdownItem.value);
+        showSuccess();
+    } catch (error) {
+        showError(`Failed to send message:`,error);
+        // console.error('Failed to send message:', error);
+    }
+
+
 };
-
-
 
 
 const connectSmpp = async () => {
-
-try {
-  await axios.post('http://localhost:3000/api/send-message', {
-    to: to.value,
-    message: message.value
-  });
-  showSuccess();
-} catch (error) {
-  showError(`Failed to send message:${error}`);
-  console.error('Failed to send message:', error);
-}
+  try {
+        await connectSMPP(host.value, port.value,systemId.value,systemType.value, password.value,version.value);
+       
+    } catch (error) {
+        showError(`Failed to send message:`,error);
+        // console.error('Failed to send message:', error);
+    }
 };
 
 const disconnectSmpp = async () => {
-
-try {
-  await axios.post('http://localhost:3000/api/send-message', {
-    to: to.value,
-    message: message.value
-  });
-  showSuccess();
-} catch (error) {
-  showError(`Failed to send message:${error}`);
-  console.error('Failed to send message:', error);
-}
+  try {
+        await disConnectSMPP(host.value, port.value,systemId.value,systemType.value, password.value,version.value);
+  
+    } catch (error) {
+        showError(`Failed to send message:`,error);
+    
+        // console.error('Failed to send message:', error);
+    }
 };
 
 const txonlySmpp = async () => {
-
-try {
-  await axios.post('http://localhost:3000/api/send-message', {
-    to: to.value,
-    message: message.value
-  });
-  showSuccess();
-} catch (error) {
-  showError(`Failed to send message:${error}`);
-  console.error('Failed to send message:', error);
-}
+  try {
+        await txOnlySMPP(host.value, port.value,systemId.value,systemType.value, password.value,version.value);
+     
+    } catch (error) {
+        showError(`Failed to send message:`,error);
+    
+        // console.error('Failed to send message:', error);
+    }
 };
 
 const rxonlySmpp = async () => {
+  try {
+        await rxOnlySMPP(host.value, port.value,systemId.value,systemType.value, password.value,version.value);
+     
+    } catch (error) {
+        showError(`Failed to send message:`,error);
 
-try {
-  await axios.post('http://localhost:3000/api/send-message', {
-    to: to.value,
-    message: message.value
-  });
-  showSuccess();
-} catch (error) {
-  showError(`Failed to send message:${error}`);
-  console.error('Failed to send message:', error);
-}
+        // console.error('Failed to send message:', error);
+    }
 };
 
 const showSuccess = () => {
