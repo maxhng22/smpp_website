@@ -104,6 +104,12 @@ const model = ref([
                 icon: 'pi pi-fw pi-circle-off',
                 to: '/pages/smppmessage'
             },
+            {
+                label: 'SMPP-Load-Test',
+                icon: 'pi pi-fw pi-circle-off',
+                to: '/pages/loadtestsmpp'
+            },
+
             // {
             //     label: 'SMPP-Connection',
             //     icon: 'pi pi-fw pi-circle-off',

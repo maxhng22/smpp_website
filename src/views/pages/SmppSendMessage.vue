@@ -182,7 +182,7 @@
 
 <script setup>
 import { ref, onBeforeMount, reactive } from 'vue';
-import { sendMessageSMPP,txOnlySMPP,rxOnlySMPP,connectSMPP,disConnectSMPP } from '@/service/smpp/smpp';
+import { sendMessageSMPP,txOnlySMPP,rxOnlySMPP,connectSMPP,disConnectSMPP,getSMPPConnection } from '@/service/smpp/smpp';
 import axios from 'axios';
 import { useToast } from 'primevue/usetoast';
 import { FilterMatchMode, FilterOperator } from 'primevue/api';
@@ -337,6 +337,9 @@ const calculateCustomerTotal = (name) => {
 
 const sendMessage = async () => {
   try {
+
+    const data =await getSMPPConnection()
+    console.log(data)
         await sendMessageSMPP(from.value, to.value,message.value,dropdownItem.value);
         showSuccess();
     } catch (error) {

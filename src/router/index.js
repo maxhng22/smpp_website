@@ -142,6 +142,11 @@ const router = createRouter({
                     component: () => import('@/views/pages/SmppSendMessage.vue')
                 },
                 {
+                    path: '/pages/loadtestsmpp',
+                    name: 'loadtestsmpp',
+                    component: () => import('@/views/pages/SmppLoadTest.vue')
+                },
+                {
                     path: '/pages/smppconnection',
                     name: 'smppconnection',
                     component: () => import('@/views/pages/SmppConnection.vue')
