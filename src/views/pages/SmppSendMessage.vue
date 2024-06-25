@@ -88,7 +88,7 @@
 
 
 
-      <div class="field col-5">
+      <div class="field col-12 md:col-5 lg:col-5">
         <ButtonGroup>
           <Button label="Connect"  @click="connectSmpp"/>
           <Button label="Tx-Only" severity="secondary" @click="txonlySmpp" />
@@ -363,7 +363,7 @@ const connectSmpp = async () => {
 
 const disconnectSmpp = async () => {
   try {
-        await disConnectSMPP(host.value, port.value,systemId.value,systemType.value, password.value,version.value);
+        await disConnectSMPP(host.value, port.value,systemId.value, password.value,systemType.value,version.value);
   
     } catch (error) {
         showError(`Failed to send message:`,error);
@@ -374,7 +374,7 @@ const disconnectSmpp = async () => {
 
 const txonlySmpp = async () => {
   try {
-        await txOnlySMPP(host.value, port.value,systemId.value,systemType.value, password.value,version.value);
+        await txOnlySMPP(host.value, port.value,systemId.value, password.value,systemType.value,version.value);
      
     } catch (error) {
         showError(`Failed to send message:`,error);
@@ -385,7 +385,7 @@ const txonlySmpp = async () => {
 
 const rxonlySmpp = async () => {
   try {
-        await rxOnlySMPP(host.value, port.value,systemId.value,systemType.value, password.value,version.value);
+        await rxOnlySMPP(host.value, port.value,systemId.value, password.value,systemType.value,version.value);
      
     } catch (error) {
         showError(`Failed to send message:`,error);
