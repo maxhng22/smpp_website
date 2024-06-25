@@ -353,7 +353,7 @@ const sendMessage = async () => {
 
 const connectSmpp = async () => {
   try {
-        await connectSMPP(host.value, port.value,systemId.value,systemType.value, password.value,version.value);
+        await connectSMPP(host.value, port.value,systemId.value, password.value,systemType.value,version.value);
        
     } catch (error) {
         showError(`Failed to send message:`,error);
