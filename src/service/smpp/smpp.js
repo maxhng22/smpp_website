@@ -12,6 +12,10 @@ export const rxOnlySMPP = async (host, port,systemId,password,systemType,version
     return apiClient.post('/api/rxonlysmpp', { host, port,systemId,password,systemType,version });
 }
 
+export const loadTest = async (host, port,systemId,password,systemType,version) => {
+    return apiClient.post('/api/loadtest', { host, port,systemId,password,systemType,version });
+}
+
 export const connectSMPP = async (host, port,systemId,password,systemType,version) => {
     return apiClient.post('/api/connectsmpp', { host, port,systemId,password,systemType,version });
 }
