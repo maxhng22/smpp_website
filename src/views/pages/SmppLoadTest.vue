@@ -74,28 +74,29 @@
     <h1>Configure test run</h1>
     <div class="p-fluid formgrid grid">
       <div class="field col-12 md:col-2">
-        <label for="to" class="p-sr-only">Messages</label>
-        <InputText v-model="testMessages" id="to" type="text" placeholder="Messages" />
+        <label for="testMessages">Messages</label>
+        <InputText v-model="testMessages" id="testMessages" type="number" placeholder="Quantity of messages" />
+
       </div>
 
       <div class="field col-12 md:col-2">
-        <label for="to" class="p-sr-only">TPS</label>
-        <InputText v-model="tps" id="to" type="text" placeholder="TPS" />
+        <label for="tps">TPS</label>
+        <InputText v-model="tps" id="tps" type="number" placeholder="Rate of SMS submission" />
       </div>
 
       <div class="field col-12 md:col-2">
-        <label for="to" class="p-sr-only">Binds</label>
-        <InputText v-model="binds" id="to" type="text" placeholder="Binds" />
+        <label for="binds">Binds</label>
+        <InputText v-model="binds" id="binds" type="number" placeholder="Quantity of binds" />
       </div>
 
       <div class="field col-12 md:col-2">
-        <label for="to" class="p-sr-only">Submit window</label>
-        <InputText v-model="submitWindow" id="to" type="number" placeholder="Submit window" />
+        <label for="submitWindow">Submit window</label>
+        <InputText v-model="submitWindow" id="submitWindow" type="number" placeholder="Size of submit window" />
       </div>
 
       <div class="field col-12 md:col-2">
         <Button class="mb-4" label="Run Load Test" @click="loadTest"></Button>
-        <Button label="Abort" disabled=false @click="abort"></Button>
+        <Button label="Abort" :disabled="abortStatus" @click="abort"></Button>
       </div>
     </div>
     <h2>Test results</h2>
@@ -130,6 +131,7 @@ const { isDarkTheme } = useLayout();
 const toast = useToast(); // Move useToast inside a function
 const from = ref('');
 const to = ref('');
+const message = ref('');
 const host = ref('');
 const port = ref('');
 const systemId = ref('');
@@ -142,6 +144,7 @@ const tps = ref('');
 const binds = ref('');
 const submitWindow = ref('');
 const lineOptions = ref(null);
+let abortStatus = ref(true)
 
 
 
@@ -266,8 +269,10 @@ const updateChartData = (latencyArray) => {
 
 const loadTest = async () => {
   try {
-    const result = await loadTestSMPP(host.value, port.value, systemId.value, password.value, systemType.value, version.value);
-    console.log(result)
+    abortStatus.value = false;
+    const result = await loadTestSMPP(host.value, port.value, systemId.value, password.value, systemType.value, version.value,
+      from.value, to.value, message.value, testMessages.value, tps.value, binds.value, submitWindow.value)
+
     updateChartData(result.data.message.latencyArray);
   } catch (error) {
     console.log(error)
@@ -280,7 +285,7 @@ const abort = async () => {
   try {
 
     const data = await getSMPPConnection()
-    console.log(data)
+
     await sendMessageSMPP(from.value, to.value, message.value, dropdownItem.value);
     showSuccess();
   } catch (error) {
