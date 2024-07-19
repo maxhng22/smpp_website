@@ -29,7 +29,9 @@
 
       <div class="field col-12 md:col-2">
         <label for="to" class="p-sr-only">Version</label>
-        <InputText v-model="version" id="to" type="text" placeholder="Version" />
+        <Dropdown id="state" v-model="version" :options="dropdownItemsVersion" optionLabel="name"
+          placeholder="Select One Version">
+        </Dropdown>
       </div>
 
 
@@ -75,23 +77,23 @@
     <div class="p-fluid formgrid grid">
       <div class="field col-12 md:col-2">
         <label for="testMessages">Messages</label>
-        <InputText v-model="testMessages" id="testMessages" type="number" placeholder="Quantity of messages" />
+        <InputText v-model="testMessages" id="testMessages" type="number" placeholder="Quantity of messages" min="1" />
 
       </div>
 
       <div class="field col-12 md:col-2">
         <label for="tps">TPS</label>
-        <InputText v-model="tps" id="tps" type="number" placeholder="Rate of SMS submission" />
+        <InputText v-model="tps" id="tps" type="number" placeholder="Rate of SMS submission" min="1" />
       </div>
 
       <div class="field col-12 md:col-2">
         <label for="binds">Binds</label>
-        <InputText v-model="binds" id="binds" type="number" placeholder="Quantity of binds" />
+        <InputText v-model="binds" id="binds" type="number" placeholder="Quantity of binds" min="1" />
       </div>
 
       <div class="field col-12 md:col-2">
         <label for="submitWindow">Submit window</label>
-        <InputText v-model="submitWindow" id="submitWindow" type="number" placeholder="Size of submit window" />
+        <InputText v-model="submitWindow" id="submitWindow" type="number" placeholder="Size of submit window" min="1" />
       </div>
 
       <div class="field col-12 md:col-2">
@@ -104,7 +106,7 @@
       <div class="field col-12 md:col-6">
 
         <h5>SubmitSm TPS</h5>
-        <Chart type="line" :data="lineData" :options="lineOptions" />
+        <Chart type="line" :data="lineData2" :options="lineOptions2" />
       </div>
 
       <div class="field col-12 md:col-6">
@@ -129,26 +131,65 @@ const { isDarkTheme } = useLayout();
 
 // host,port,systemId,password,systemType,version
 const toast = useToast(); // Move useToast inside a function
-const from = ref('');
-const to = ref('');
-const message = ref('');
-const host = ref('');
-const port = ref('');
-const systemId = ref('');
-const systemType = ref('');
-const password = ref('');
-const version = ref('');
+const from = ref('max');
+const to = ref('maxent');
+const message = ref('any');
+const host = ref('127.0.0.1');
+const port = ref('4002');
+const systemId = ref('system');
+const systemType = ref('123');
+const password = ref('123456');
+const version = ref({ name: 'v3.4 (0x34)', code: 2 });
 const dropdownItem = ref('');
-const testMessages = ref('');
-const tps = ref('');
-const binds = ref('');
-const submitWindow = ref('');
+const testMessages = ref(100);
+const tps = ref(20);
+const binds = ref(1);
+const submitWindow = ref(20);
 const lineOptions = ref(null);
+const lineOptions2 = ref(null);
 let abortStatus = ref(true)
 
-
+const dropdownItemsVersion = ref([
+  { name: 'Default (0x00)', code: 1 },
+  { name: 'v3.3 (0x33)', code: 0 },
+  { name: 'v3.4 (0x34)', code: 2 },
+  { name: 'v5 (0x50)', code: 3 },
+]);
 
 const applyDarkTheme = () => {
+  lineOptions2.value = {
+    plugins: {
+      decimation: {
+        enabled: true,
+        algorithm: 'lttb', // Uses 'Largest Triangle Three Buckets' algorithm
+        samples: 500 // Number of samples to display
+      },
+      legend: {
+        labels: {
+          color: '#ebedef'
+        }
+      }
+    },
+    scales: {
+      x: {
+        display: true,
+        ticks: {
+          color: '#ebedef'
+        },
+        grid: {
+          color: 'rgba(160, 167, 181, .3)'
+        }
+      },
+      y: {
+        ticks: {
+          color: '#ebedef'
+        },
+        grid: {
+          color: 'rgba(160, 167, 181, .3)'
+        }
+      }
+    }
+  };
   lineOptions.value = {
     plugins: {
       decimation: {
@@ -185,6 +226,39 @@ const applyDarkTheme = () => {
 };
 
 const applyLightTheme = () => {
+  lineOptions2.value = {
+    plugins: {
+      decimation: {
+        enabled: true,
+        algorithm: 'lttb', // Uses 'Largest Triangle Three Buckets' algorithm
+        samples: 500 // Number of samples to display
+      },
+      legend: {
+        labels: {
+          color: '#495057'
+        }
+      }
+    },
+    scales: {
+      x: {
+        display: true, // Hide x-axis labels,
+        ticks: {
+          color: '#495057'
+        },
+        grid: {
+          color: '#ebedef'
+        }
+      },
+      y: {
+        ticks: {
+          color: '#495057'
+        },
+        grid: {
+          color: '#ebedef'
+        }
+      }
+    }
+  };
   lineOptions.value = {
     plugins: {
       decimation: {
@@ -241,7 +315,7 @@ const lineData = reactive({
   labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
   datasets: [
     {
-      label: 'First Dataset',
+      label: 'Latency',
       data: [65, 59, 80, 81, 56, 55, 40],
       fill: false,
       backgroundColor: '#2f4860',
@@ -261,10 +335,39 @@ const lineData = reactive({
   ]
 });
 
+const lineData2 = reactive({
+  labels: ['1', '2', '3', '4', '5', '6', '7'],
+  datasets: [
+    {
+      label: 'Messages',
+      data: [65, 59, 80, 81, 56, 55, 40],
+      fill: false,
+      backgroundColor: '#00bb7e',
+      borderColor: '#00bb7e',
+      tension: 0.4,
+      // cubicInterpolationMode: 'monotone',
+      // pointRadius: 0
+    },
+    // {
+    //   label: 'Second Dataset',
+    //   data: [28, 48, 40, 19, 86, 27, 90],
+    //   fill: false,
+    //   backgroundColor: '#00bb7e',
+    //   borderColor: '#00bb7e',
+    //   tension: 0.4
+    // }
+  ]
+});
+
 
 const updateChartData = (latencyArray) => {
   lineData.labels = latencyArray.map((_, index) => index + 1); // Create labels based on the index of each latency value
   lineData.datasets[0].data = latencyArray;
+};
+
+const updateChartData2 = (latencyArray) => {
+  lineData2.labels = latencyArray.map((_, index) => index + 1); // Create labels based on the index of each latency value
+  lineData2.datasets[0].data = latencyArray;
 };
 
 const loadTest = async () => {
@@ -273,6 +376,7 @@ const loadTest = async () => {
     const result = await loadTestSMPP(host.value, port.value, systemId.value, password.value, systemType.value, version.value,
       from.value, to.value, message.value, testMessages.value, tps.value, binds.value, submitWindow.value)
 
+    updateChartData2(result.data.message.messagesPerSecondArray)
     updateChartData(result.data.message.latencyArray);
   } catch (error) {
     console.log(error)
@@ -289,7 +393,7 @@ const abort = async () => {
     await sendMessageSMPP(from.value, to.value, message.value, dropdownItem.value);
     showSuccess();
   } catch (error) {
-    showError(`Failed to send message:`, error);
+    showError(`Failed to send message:`, error.message);
     // console.error('Failed to send message:', error);
   }
 
@@ -297,12 +401,12 @@ const abort = async () => {
 };
 
 
-const showSuccess = () => {
-  toast.add({ severity: 'success', summary: 'Success Message', detail: 'Message Detail', life: 3000 });
+const showSuccess = (detail) => {
+  toast.add({ severity: 'success', summary: 'Success Message', detail: detail||'Operation success', life: 3000 });
 };
 
 const showError = (summary, detail) => {
-  toast.add({ severity: 'error', summary: 'Error Message', detail: 'Message Detail', life: 3000 });
+  toast.add({ severity: 'error', summary: 'Error Message', detail: detail||'Please try again later', life: 3000 });
 };
 
 // Define other toast functions here

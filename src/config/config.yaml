@@ -5,6 +5,6 @@ database:
   name: mydatabase
   user: myuser
   password: mypassword
-  testing: mypassword
-  testing2: mypassword
-  testing4: mypassword
+smpp:
+  system_id: test
+  password: 123456

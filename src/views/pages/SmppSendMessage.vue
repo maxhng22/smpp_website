@@ -388,12 +388,12 @@ const rxonlySmpp = async () => {
 
 
 
-const showSuccess = () => {
-  toast.add({ severity: 'success', summary: 'Success Message', detail: 'Message Detail', life: 3000 });
+const showSuccess = (detail) => {
+  toast.add({ severity: 'success', summary: 'Success Message', detail: detail||'Operation success', life: 3000 });
 };
 
 const showError = (summary, detail) => {
-  toast.add({ severity: 'error', summary: 'Error Message', detail: 'Message Detail', life: 3000 });
+  toast.add({ severity: 'error', summary: 'Error Message', detail: detail||'Please try again later', life: 3000 });
 };
 
 // Define other toast functions here

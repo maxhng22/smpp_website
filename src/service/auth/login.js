@@ -5,5 +5,5 @@ export const login = async (username, password) => {
   };
   
   export const register = async (username, password) => {
-    return apiClient.post('/updateconfiguration', {username, password});
+    return apiClient.post('/api/register', {username, password});
   };

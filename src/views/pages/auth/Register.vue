@@ -4,7 +4,7 @@ import { ref, computed } from 'vue';
 import AppConfig from '@/layout/AppConfig.vue';
 import { useRouter } from 'vue-router';
 import { useToast } from 'primevue/usetoast';
-import { login as signIn } from '@/service/auth/login';
+import { register } from '@/service/auth/login';
 const router = useRouter();
 const toast = useToast();
 
@@ -20,37 +20,24 @@ const logoUrl = computed(() => {
 const login = async () => {
     // showError(`Failed to send message:${error}`);
     try {
-        const response = await signIn(email.value, password.value);
-        if (response) {
-            const token = response.data.token;
-            localStorage.setItem('token', token); 
-            router.push('/pages/empty');
-        } else {
-            router.push('/pages/Access');
-        }
-
+        await register(email.value, password.value);
+        router.push('/');
     } catch (error) {
-        console.log(error)
-        showError(`Failed to send message:`, error.message);
-        // router.push('/pages/empty');
+        showError(`Failed to send message:`, error);
+        // router.push('/pages/Access');
         // console.error('Failed to send message:', error);
     }
 }
 
 const signUp = async () => {
     // showError(`Failed to send message:${error}`);
-    router.push('/register');
+    router.push('/');
 
 }
 
-const showSuccess = (detail) => {
-  toast.add({ severity: 'success', summary: 'Success Message', detail: detail||'Operation success', life: 3000 });
-};
-
 const showError = (summary, detail) => {
-  toast.add({ severity: 'error', summary: 'Error Message', detail: detail||'Please try again later', life: 3000 });
+    toast.add({ severity: 'error', summary: summary, detail: detail, life: 3000 });
 };
-
 </script>
 
 <template>
@@ -77,22 +64,15 @@ const showError = (summary, detail) => {
                         <Password id="password1" v-model="password" placeholder="Password" :toggleMask="true"
                             class="w-full mb-3" inputClass="w-full" :inputStyle="{ padding: '1rem' }"></Password>
 
-                        <div class="flex align-items-center justify-content-between mb-5 gap-5">
-                            <div class="flex align-items-center">
-                                <Checkbox v-model="checked" id="rememberme1" binary class="mr-2"></Checkbox>
-                                <label for="rememberme1">Remember me</label>
-                            </div>
-                            <a class="font-medium no-underline ml-2 text-right cursor-pointer"
-                                style="color: var(--primary-color)">Forgot password?</a>
-                        </div>
-                        <Button label="Sign In" class="w-full p-3 text-xl" @click="login"></Button>
+
+                        <Button label="Sign Up" class="w-full p-3 text-xl" @click="login"></Button>
 
                         <div class="flex align-items-center justify-content-between mb-5 gap-5">
                             <div class="flex align-items-center">
 
-                                <label for="rememberme1">Don’t you have an account,</label>
+                                <label for="rememberme1">Already have an account,</label>
                                 <a class="font-medium no-underline ml-2 text-right cursor-pointer" @click="signUp"
-                                    style="color: var(--primary-color)">sign up?</a>
+                                    style="color: var(--primary-color)">sign in?</a>
                             </div>
 
                         </div>

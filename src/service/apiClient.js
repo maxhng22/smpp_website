@@ -14,10 +14,10 @@ const apiClient = axios.create({
 // For example, adding a token to the headers before each request
 apiClient.interceptors.request.use(
   config => {
-    // const token = localStorage.getItem('token');
-    // if (token) {
-    //   config.headers.Authorization = `Bearer ${token}`;
-    // }
+    const token = localStorage.getItem('token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
     return config;
   },
   error => {

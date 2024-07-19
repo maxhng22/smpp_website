@@ -11,7 +11,7 @@ export class CustomerService {
     }
 
     getCustomersLarge() {
-        return fetch('http://localhost:3000/api/smppConnection', { headers: { 'Cache-Control': 'no-cache' } })
+        return fetch('http://localhost:3004/api/smppConnection', { headers: { 'Cache-Control': 'no-cache' } })
             .then((res) => res.json())
             .then((d) => d.data);
     }
